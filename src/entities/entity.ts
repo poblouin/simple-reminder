@@ -1,4 +1,4 @@
 export interface Entity {
-  toPostgres(): Array<string>;
+  toPostgres(): Array<any>;
   toPostgresColumns(): Array<string>;
 }

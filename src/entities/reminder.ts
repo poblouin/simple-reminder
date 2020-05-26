@@ -1,32 +1,63 @@
-// import { Entity } from '@entities/entity';
-// import User from '@entities/user';
+import snakeCase from 'lodash.snakecase';
 
-// interface Reminder {
-//   id: number;
-//   title: string;
-//   description: string;
-//   user: User;
-// }
+import { Entity } from '@entities/entity';
 
-// class Reminder implements Reminder, Entity {
-//   public id: number;
+interface Reminder {
+  id: number;
+  name: string;
+  description: string;
+  isDone: boolean;
+  dueTimestampUTC: Date;
+  category: number;
+  user: number;
+  [key: string]: Reminder[keyof Reminder];
+}
 
-//   public title: string;
+class Reminder implements Reminder, Entity {
+  public id: number;
 
-//   public description: string;
+  public name: string;
 
-//   public user: User;
+  /**
+   * @property
+   * Unix Timestamp
+   */
+  public description: string;
 
-//   constructor(title: string, description: string, user: User, id?: number) {
-//     this.title = title;
-//     this.description = description;
-//     this.user = user;
-//     this.id = id || -1;
-//   }
+  public isDone: boolean;
 
-//   toDBValues(): string {
-//     return `('${this.title}', '${this.description}', '${this.user.id}')`;
-//   }
-// }
+  public dueTimestampUTC: Date;
 
-// export default Reminder;
+  public category: number;
+
+  public user: number;
+
+  constructor(reminder: any) {
+    this.name = reminder.name;
+    this.description = reminder.description;
+    this.isDone = reminder.isDone || false;
+    this.dueTimestampUTC = new Date(reminder.dueTimestampUTC * 1000);
+    this.category = reminder.category || -1;
+    this.user = reminder.user || -1;
+    this.id = reminder.id || -1;
+  }
+
+  public toPostgres(): Array<any> {
+    return [
+      this.name,
+      this.description,
+      this.isDone,
+      this.dueTimestampUTC,
+      ...(this.user !== -1 ? [this.user] : []),
+      ...(this.category !== -1 ? [this.category] : []),
+    ];
+  }
+
+  public toPostgresColumns(): Array<string> {
+    return Object.keys(this)
+      .filter((k) => k !== 'id' && this[k] !== -1)
+      .map((k) => snakeCase(k));
+  }
+}
+
+export default Reminder;

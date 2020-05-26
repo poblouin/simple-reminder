@@ -1,11 +1,19 @@
 import query from '@db';
 import logger from '@shared/logger';
 import { Entity } from '@entities/entity';
+import { toPostgresColumnStatement, toPostgresValuesStatement } from '@shared/functions';
 
-const wrapper = (p: Promise<any>) =>
+const wrapper = (p: Promise<any>): Promise<any> =>
   p
     .then((result: any) => ({ result, error: null }))
     .catch((error: Error) => ({ error, result: null }));
+
+const processError = (err: Error | null): void => {
+  if (err) {
+    logger.error(err);
+    throw err;
+  }
+};
 
 abstract class Dao<E extends Entity> {
   readonly tableName: string;
@@ -18,51 +26,33 @@ abstract class Dao<E extends Entity> {
   }
 
   async get(value: any, column = this.pkeyName): Promise<E | null> {
-    const { result, error } = await wrapper(
-      query(`SELECT * from public.${this.tableName} WHERE ${column} = ${value};`)
-    );
+    const queryStr = `SELECT * from public.${this.tableName} WHERE ${column} = $1;`;
 
-    if (error) {
-      logger.error(error);
-      return null;
-    }
+    const { result, error } = await wrapper(query(queryStr, [value]));
+
+    processError(error);
 
     return result.rows[0];
   }
 
   async getCollection(): Promise<Array<E> | null> {
-    const { result, error } = await wrapper(query(`SELECT * from public.${this.tableName};`));
+    const queryStr = `SELECT * from public.${this.tableName};`;
 
-    if (error) {
-      logger.error(error);
-      return null;
-    }
+    const { result, error } = await wrapper(query(queryStr));
+
+    processError(error);
 
     return result.rows;
   }
 
   async create(e: E): Promise<E | null> {
-    const { result, error } = await wrapper(
-      query(
-        `INSERT INTO public.${this.tableName} (${e
-          .toPostgresColumns()
-          .reduce(
-            (acc, current, index, arr) => `${acc}${current}${index === arr.length - 1 ? '' : ','}`,
-            ''
-          )}) VALUES (${e
-          .toPostgres()
-          .reduce(
-            (acc, _, index, arr) => `${acc}$${index + 1}${index === arr.length - 1 ? '' : ','}`,
-            ''
-          )}) RETURNING *;`,
-        e.toPostgres()
-      )
-    );
+    const queryStr = `INSERT INTO public.${this.tableName} (${toPostgresColumnStatement(
+      e.toPostgresColumns()
+    )}) VALUES (${toPostgresValuesStatement(e.toPostgres())}) RETURNING *;`;
 
-    if (error) {
-      logger.error(error);
-      return null;
-    }
+    const { result, error } = await wrapper(query(queryStr, e.toPostgres()));
+
+    processError(error);
 
     return result.rows[0];
   }
@@ -71,11 +61,12 @@ abstract class Dao<E extends Entity> {
   //   throw new Error('Not Implemented');
   // }
 
-  async delete(id: number): Promise<boolean> {
-    const { error } = await wrapper(query(`DELETE from ${this.tableName} WHERE id = ${id};`));
+  async delete(id: number): Promise<void> {
+    const queryStr = `DELETE from public.${this.tableName} WHERE id = $1;`;
 
-    if (error) logger.error(error);
-    return error !== null;
+    const { error } = await wrapper(query(queryStr, [id]));
+
+    processError(error);
   }
 }
 

@@ -1,50 +1,50 @@
 import { Request, Response, Router } from 'express';
 import { BAD_REQUEST, CREATED, OK, NO_CONTENT } from 'http-status-codes';
 
-import UserDao from '@daos/user-dao';
+import ReminderCategoryDao from '@daos/reminder-category-dao';
 import { paramMissingError } from '@shared/constants';
-import User from '@entities/user';
+import ReminderCategory from '@entities/reminder-category';
 
 const router = Router();
-const userDao = new UserDao();
+const reminderCategoryDao = new ReminderCategoryDao();
 
 router.get('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = await userDao.get(+id);
-  return res.status(OK).json({ user });
+  const reminder = await reminderCategoryDao.get(+id);
+  return res.status(OK).json({ reminder });
 });
 
 router.get('/', async (req: Request, res: Response) => {
-  const users = await userDao.getCollection();
-  return res.status(OK).json({ users });
+  const reminders = await reminderCategoryDao.getCollection();
+  return res.status(OK).json({ reminders });
 });
 
 router.post('/', async (req: Request, res: Response) => {
-  const { user } = req.body;
-  if (!user) {
+  const { reminder } = req.body;
+  if (!reminder) {
     return res.status(BAD_REQUEST).json({
       error: paramMissingError,
     });
   }
-  await userDao.create(new User(user));
+  await reminderCategoryDao.create(new ReminderCategory(reminder));
   return res.status(CREATED).end();
 });
 
 // router.put('/update', async (req: Request, res: Response) => {
-//   const { user } = req.body;
-//   if (!user) {
+//   const { reminder } = req.body;
+//   if (!reminder) {
 //     return res.status(BAD_REQUEST).json({
 //       error: paramMissingError,
 //     });
 //   }
-//   user.id = Number(user.id);
-//   await userDao.update(user);
+//   reminder.id = Number(reminder.id);
+//   await reminderCategoryDao.update(reminder);
 //   return res.status(OK).end();
 // });
 
 router.delete('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  await userDao.delete(+id);
+  await reminderCategoryDao.delete(+id);
   return res.status(NO_CONTENT).end();
 });
 

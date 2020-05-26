@@ -16,14 +16,14 @@ class User implements User, Entity {
 
   public phone: string;
 
-  constructor(name: string, email: string, phone: string, id?: number) {
-    this.name = name;
-    this.email = email;
-    this.phone = phone;
-    this.id = id || -1;
+  constructor(user: any) {
+    this.name = user.name;
+    this.email = user.email;
+    this.phone = user.phone;
+    this.id = user.id || -1;
   }
 
-  public toPostgres(): Array<string> {
+  public toPostgres(): Array<any> {
     return [this.name, this.email, this.phone];
   }
 
