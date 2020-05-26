@@ -1,30 +1,35 @@
-export interface IUser {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
+import { Entity } from '@entities/entity';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
 }
 
-class User implements IUser {
+class User implements User, Entity {
+  public id: number;
 
-    public id: number;
-    public name: string;
-    public email: string;
-    public phone: string;
+  public name: string;
 
-    constructor(nameOrUser: string | IUser, email?: string, id?: number, phone?: string) {
-        if (typeof nameOrUser === 'string') {
-            this.name = nameOrUser;
-            this.email = email || '';
-            this.id = id || -1;
-            this.phone = phone || '';
-        } else {
-            this.name = nameOrUser.name;
-            this.email = nameOrUser.email;
-            this.id = nameOrUser.id;
-            this.phone = nameOrUser.phone
-        }
-    }
+  public email: string;
+
+  public phone: string;
+
+  constructor(name: string, email: string, phone: string, id?: number) {
+    this.name = name;
+    this.email = email;
+    this.phone = phone;
+    this.id = id || -1;
+  }
+
+  public toPostgres(): Array<string> {
+    return [this.name, this.email, this.phone];
+  }
+
+  public toPostgresColumns(): Array<string> {
+    return Object.keys(this).filter((k) => k !== 'id');
+  }
 }
 
 export default User;
