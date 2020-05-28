@@ -7,7 +7,7 @@ interface Reminder {
   name: string;
   description: string;
   isDone: boolean;
-  dueTimestampUTC: Date;
+  dueTimestampUtc: Date;
   category: number;
   user: number;
   [key: string]: Reminder[keyof Reminder];
@@ -26,7 +26,7 @@ class Reminder implements Reminder, Entity {
 
   public isDone: boolean;
 
-  public dueTimestampUTC: Date;
+  public dueTimestampUtc: Date;
 
   public category: number;
 
@@ -36,7 +36,7 @@ class Reminder implements Reminder, Entity {
     this.name = reminder.name;
     this.description = reminder.description;
     this.isDone = reminder.isDone || false;
-    this.dueTimestampUTC = new Date(reminder.dueTimestampUTC * 1000);
+    this.dueTimestampUtc = new Date(reminder.dueTimestampUtc * 1000);
     this.category = reminder.category || -1;
     this.user = reminder.user || -1;
     this.id = reminder.id || -1;
@@ -47,7 +47,7 @@ class Reminder implements Reminder, Entity {
       this.name,
       this.description,
       this.isDone,
-      this.dueTimestampUTC,
+      this.dueTimestampUtc,
       ...(this.user !== -1 ? [this.user] : []),
       ...(this.category !== -1 ? [this.category] : []),
     ];

@@ -1,3 +1,5 @@
+import camelCase from 'lodash.camelcase';
+
 import query from '@db';
 import logger from '@shared/logger';
 import { Entity } from '@entities/entity';
@@ -15,6 +17,10 @@ const processError = (err: Error | null): void => {
   }
 };
 
+const toCamelCase = (o: { [key: string]: string }): object => {
+  return Object.assign({}, ...Object.keys(o).map((k) => ({ [camelCase(k)]: o[k] })));
+};
+
 abstract class Dao<E extends Entity> {
   readonly tableName: string;
 
@@ -25,27 +31,27 @@ abstract class Dao<E extends Entity> {
     this.pkeyName = pkeyName;
   }
 
-  async get(value: any, column = this.pkeyName): Promise<E | null> {
+  async get(value: any, column = this.pkeyName): Promise<E> {
     const queryStr = `SELECT * from public.${this.tableName} WHERE ${column} = $1;`;
 
     const { result, error } = await wrapper(query(queryStr, [value]));
 
     processError(error);
 
-    return result.rows[0];
+    return toCamelCase(result.rows[0]) as E;
   }
 
-  async getCollection(): Promise<Array<E> | null> {
+  async getCollection(): Promise<Array<E>> {
     const queryStr = `SELECT * from public.${this.tableName};`;
 
     const { result, error } = await wrapper(query(queryStr));
 
     processError(error);
 
-    return result.rows;
+    return result.rows.map((r: { [key: string]: string }) => toCamelCase(r)) as Array<E>;
   }
 
-  async create(e: E): Promise<E | null> {
+  async create(e: E): Promise<E> {
     const queryStr = `INSERT INTO public.${this.tableName} (${toPostgresColumnStatement(
       e.toPostgresColumns()
     )}) VALUES (${toPostgresValuesStatement(e.toPostgres())}) RETURNING *;`;
@@ -54,7 +60,7 @@ abstract class Dao<E extends Entity> {
 
     processError(error);
 
-    return result.rows[0];
+    return toCamelCase(result.rows[0]) as E;
   }
 
   // async update(e: E): Promise<E> {

@@ -18,7 +18,7 @@ exports.up = pgm => {
 
   pgm.createTable('reminder', {
     id: 'id',
-    name: { type: 'varchar(64)', notNull: true, unique: true },
+    name: { type: 'varchar(64)', notNull: true },
     description: 'varchar(1024)',
     is_done: { type: 'boolean', default: 'FALSE' },
     due_timestamp_utc: { type: 'timestamp', notNull: true },
