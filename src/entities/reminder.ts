@@ -36,7 +36,7 @@ class Reminder implements Reminder, Entity {
     this.name = reminder.name;
     this.description = reminder.description;
     this.isDone = reminder.isDone || false;
-    this.dueTimestampUtc = new Date(reminder.dueTimestampUtc * 1000);
+    this.dueTimestampUtc = new Date(reminder.dueTimestampUtc);
     this.category = reminder.category || -1;
     this.user = reminder.user || -1;
     this.id = reminder.id || -1;
