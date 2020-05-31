@@ -10,37 +10,25 @@ const reminderCategoryDao = new ReminderCategoryDao();
 
 router.get('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
-  const reminder = await reminderCategoryDao.get(+id);
-  return res.status(OK).json({ reminder });
+  const reminderCategory = await reminderCategoryDao.get(+id);
+  return res.status(OK).json({ 'reminder-category': reminderCategory });
 });
 
 router.get('/', async (req: Request, res: Response) => {
-  const reminders = await reminderCategoryDao.getCollection();
-  return res.status(OK).json({ reminders });
+  const reminderCategories = await reminderCategoryDao.getCollection();
+  return res.status(OK).json({ 'reminder-categories': reminderCategories });
 });
 
 router.post('/', async (req: Request, res: Response) => {
-  const { reminder } = req.body;
-  if (!reminder) {
+  const reminderCategory = req.body['reminder-category'];
+  if (!reminderCategory) {
     return res.status(BAD_REQUEST).json({
       error: paramMissingError,
     });
   }
-  await reminderCategoryDao.create(new ReminderCategory(reminder));
+  await reminderCategoryDao.create(new ReminderCategory(reminderCategory));
   return res.status(CREATED).end();
 });
-
-// router.put('/update', async (req: Request, res: Response) => {
-//   const { reminder } = req.body;
-//   if (!reminder) {
-//     return res.status(BAD_REQUEST).json({
-//       error: paramMissingError,
-//     });
-//   }
-//   reminder.id = Number(reminder.id);
-//   await reminderCategoryDao.update(reminder);
-//   return res.status(OK).end();
-// });
 
 router.delete('/:id', async (req: Request, res: Response) => {
   const { id } = req.params;

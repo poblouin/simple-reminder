@@ -1,8 +1,10 @@
+import snakeCase from 'lodash.snakecase';
+
 import { Entity } from '@entities/entity';
 
 interface User {
   id: number;
-  name: string;
+  userName: string;
   email: string;
   phone: string;
 }
@@ -10,25 +12,27 @@ interface User {
 class User implements User, Entity {
   public id: number;
 
-  public name: string;
+  public userName: string;
 
   public email: string;
 
   public phone: string;
 
   constructor(user: any) {
-    this.name = user.name;
+    this.userName = user.userName;
     this.email = user.email;
     this.phone = user.phone;
     this.id = user.id || -1;
   }
 
   public toPostgres(): Array<any> {
-    return [this.name, this.email, this.phone];
+    return [this.userName, this.email, this.phone];
   }
 
   public toPostgresColumns(): Array<string> {
-    return Object.keys(this).filter((k) => k !== 'id');
+    return Object.keys(this)
+      .filter((k) => k !== 'id')
+      .map((k) => snakeCase(k));
   }
 }
 

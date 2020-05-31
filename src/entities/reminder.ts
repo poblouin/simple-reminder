@@ -1,22 +1,24 @@
 import snakeCase from 'lodash.snakecase';
 
 import { Entity } from '@entities/entity';
+import ReminderCategory from './reminder-category';
+import User from './user';
 
 interface Reminder {
   id: number;
-  name: string;
+  reminderName: string;
   description: string;
   isDone: boolean;
   dueTimestampUtc: Date;
-  category: number;
-  user: number;
+  category: ReminderCategory;
+  user: User;
   [key: string]: Reminder[keyof Reminder];
 }
 
 class Reminder implements Reminder, Entity {
   public id: number;
 
-  public name: string;
+  public reminderName: string;
 
   /**
    * @property
@@ -28,34 +30,34 @@ class Reminder implements Reminder, Entity {
 
   public dueTimestampUtc: Date;
 
-  public category: number;
+  public category: ReminderCategory;
 
-  public user: number;
+  public user: User;
 
   constructor(reminder: any) {
-    this.name = reminder.name;
+    this.reminderName = reminder.reminderName;
     this.description = reminder.description;
     this.isDone = reminder.isDone || false;
     this.dueTimestampUtc = new Date(reminder.dueTimestampUtc);
-    this.category = reminder.category || -1;
-    this.user = reminder.user || -1;
+    this.category = reminder.category || null;
+    this.user = reminder.user || null;
     this.id = reminder.id || -1;
   }
 
   public toPostgres(): Array<any> {
     return [
-      this.name,
+      this.reminderName,
       this.description,
       this.isDone,
       this.dueTimestampUtc,
-      ...(this.user !== -1 ? [this.user] : []),
-      ...(this.category !== -1 ? [this.category] : []),
+      ...(this.user !== null ? [this.user.id] : []),
+      ...(this.category !== null ? [this.category.id] : []),
     ];
   }
 
   public toPostgresColumns(): Array<string> {
     return Object.keys(this)
-      .filter((k) => k !== 'id' && this[k] !== -1)
+      .filter((k) => k !== 'id' && this[k] !== null)
       .map((k) => snakeCase(k));
   }
 }
