@@ -3,7 +3,6 @@ import snakeCase from 'lodash.snakecase';
 import { Entity } from '@entities/entity';
 
 interface ReminderCategory {
-  id: number;
   categoryName: string;
   color: string;
 }

@@ -5,7 +5,6 @@ import ReminderCategory from './reminder-category';
 import User from './user';
 
 interface Reminder {
-  id: number;
   reminderName: string;
   description: string;
   isDone: boolean;

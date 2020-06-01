@@ -63,9 +63,18 @@ abstract class Dao<E extends Entity> {
     return toCamelCase(result.rows[0]) as E;
   }
 
-  // async update(e: E): Promise<E> {
-  //   throw new Error('Not Implemented');
-  // }
+  async update(e: E): Promise<E> {
+    const queryStr = `UPDATE public.${this.tableName} SET (${toPostgresColumnStatement(
+      e.toPostgresColumns()
+    )}) = (${toPostgresValuesStatement(e.toPostgres())})
+    WHERE ${this.pkeyName} = ${e[this.pkeyName]} RETURNING *;`;
+
+    const { result, error } = await wrapper(query(queryStr, e.toPostgres()));
+
+    processError(error);
+
+    return toCamelCase(result.rows[0]) as E;
+  }
 
   async delete(id: number): Promise<void> {
     const queryStr = `DELETE from public.${this.tableName} WHERE id = $1;`;

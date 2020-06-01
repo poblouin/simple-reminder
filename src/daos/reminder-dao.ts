@@ -60,6 +60,23 @@ class ReminderDao extends Dao<Reminder> {
 
     return super.create(reminder);
   }
+
+  async markDone(id: number): Promise<Reminder> {
+    const reminder = await super.get(id);
+    if (!reminder) {
+      throw new Error('NOT FOUND');
+    }
+
+    reminder.isDone = true;
+    const updatedReminder = await super.update(new Reminder(reminder));
+
+    if (updatedReminder.category) {
+      const reminderCategory = await this.reminderCategoryDao.get(updatedReminder.category);
+      updatedReminder.category = reminderCategory;
+    }
+
+    return updatedReminder;
+  }
 }
 
 export default ReminderDao;

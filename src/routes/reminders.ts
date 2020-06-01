@@ -30,6 +30,12 @@ router.post('/', async (req: Request, res: Response) => {
   return res.status(CREATED).end();
 });
 
+router.put('/:id/mark-done', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await reminderDao.markDone(+id);
+  return res.status(NO_CONTENT).end();
+});
+
 // router.put('/update', async (req: Request, res: Response) => {
 //   const { reminder } = req.body;
 //   if (!reminder) {

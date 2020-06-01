@@ -3,7 +3,6 @@ import snakeCase from 'lodash.snakecase';
 import { Entity } from '@entities/entity';
 
 interface User {
-  id: number;
   userName: string;
   email: string;
   phone: string;
