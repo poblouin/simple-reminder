@@ -62,7 +62,7 @@ class ReminderDao extends Dao<Reminder> {
   }
 
   async markDone(id: number): Promise<Reminder> {
-    const reminder = await super.get(id);
+    const reminder = await this.get(id);
     if (!reminder) {
       throw new Error('NOT FOUND');
     }

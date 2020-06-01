@@ -27,7 +27,7 @@ router.post('/', async (req: Request, res: Response) => {
     });
   }
   await reminderDao.create(new Reminder(reminder));
-  return res.status(CREATED).end();
+  return res.status(CREATED).json({ reminder });
 });
 
 router.put('/:id/mark-done', async (req: Request, res: Response) => {
