@@ -12,10 +12,11 @@ services:
       - POSTGRES_USER=simplereminder
       - POSTGRES_PASSWORD=admin
 
-  server:
+  server-dev:
     build: 
       context: .
-      dockerfile: ./.docker/server/Dockerfile
+      target: "develop-stage"
+      dockerfile: "./.docker/Dockerfile"
     ports:
      - "127.0.0.1:3000:3000"
     volumes:
@@ -23,6 +24,19 @@ services:
     env_file:
       - ./env/development.env
     command: ["npm", "run", "start:dev"]
+    depends_on:
+      - db
+
+  server:
+    build: 
+      context: .
+      target: "build-stage"
+      dockerfile: "./.docker/Dockerfile"
+    ports:
+      - "127.0.0.1:8081:8081"
+    env_file:
+      - ./env/production.env
+    command: ["npm", "run", "start"]
     depends_on:
       - db
 

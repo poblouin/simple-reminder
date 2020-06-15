@@ -4,11 +4,13 @@
   "description": "Simple Reminder Backend",
   "main": "index.ts",
   "scripts": {
+    "start": "tsnd -r tsconfig-paths/register dist/index.js",
     "start:dev": "npm run migrate up && tsnd -r tsconfig-paths/register --respawn src/index.ts -e development",
     "check-types": "tsc",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate": "node-pg-migrate"
+    "migrate": "node-pg-migrate",
+    "build": "tsc -p ."
   },
   "_moduleAliases": {
     "@daos": "dist/daos",
