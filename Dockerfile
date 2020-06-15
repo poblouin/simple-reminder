@@ -10,4 +10,5 @@ COPY --chown=node:node . .
 FROM develop-stage as build-stage
 RUN npm run build
 COPY --chown=node:node ./dist .
+CMD ["npm", "run", "start"]
 
