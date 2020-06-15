@@ -16,7 +16,6 @@ services:
     build: 
       context: .
       target: "develop-stage"
-      dockerfile: "./.docker/Dockerfile"
     ports:
      - "127.0.0.1:3000:3000"
     volumes:
@@ -31,7 +30,6 @@ services:
     build: 
       context: .
       target: "build-stage"
-      dockerfile: "./.docker/Dockerfile"
     ports:
       - "127.0.0.1:8081:8081"
     env_file:

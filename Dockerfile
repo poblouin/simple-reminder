@@ -1,4 +1,4 @@
-FROM node:lts-alpine as develop-stage
+FROM --platform=$BUILDPLATFORM node:lts-slim as develop-stage
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY package*.json ./
