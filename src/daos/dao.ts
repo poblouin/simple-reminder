@@ -41,10 +41,18 @@ abstract class Dao<E extends Entity> {
     return toCamelCase(result.rows[0]) as E;
   }
 
-  async getCollection(): Promise<Array<E>> {
-    const queryStr = `SELECT * from public.${this.tableName};`;
+  async getCollection(params?: any): Promise<Array<E>> {
+    let queryStr = `SELECT * from public.${this.tableName}`;
 
-    const { result, error } = await wrapper(query(queryStr));
+    // TODO: Generic
+    if (params && Object.keys(params).length > 0) {
+      queryStr = `${queryStr} WHERE is_done = $1;`;
+    }
+
+    queryStr = `${queryStr};`;
+
+    const paramsValues = params ? Object.values(params) : null;
+    const { result, error } = await wrapper(query(queryStr, paramsValues));
 
     processError(error);
 

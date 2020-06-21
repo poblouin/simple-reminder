@@ -21,8 +21,8 @@ class ReminderDao extends Dao<Reminder> {
     return reminder;
   }
 
-  async getCollection(): Promise<Array<Reminder>> {
-    const reminders = await super.getCollection();
+  async getCollection(params?: any): Promise<Array<Reminder>> {
+    const reminders = await super.getCollection(params);
     const returnReminders = Array<Reminder>();
 
     await reminders.reduce(async (promise, reminder) => {

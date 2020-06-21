@@ -12,29 +12,17 @@ services:
       - POSTGRES_USER=simplereminder
       - POSTGRES_PASSWORD=admin
 
-  server-dev:
+  server:
     build: 
       context: .
       target: "develop-stage"
     ports:
      - "127.0.0.1:3000:3000"
     volumes:
-     - ".:/usr/src/app:delegated"
+     - ".:/home/node/app:delegated"
     env_file:
       - ./env/development.env
     command: ["npm", "run", "start:dev"]
-    depends_on:
-      - db
-
-  server:
-    build: 
-      context: .
-      target: "build-stage"
-    ports:
-      - "127.0.0.1:8081:8081"
-    env_file:
-      - ./env/production.env
-    command: ["npm", "run", "start"]
     depends_on:
       - db
 

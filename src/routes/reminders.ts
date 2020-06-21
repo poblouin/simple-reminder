@@ -15,7 +15,8 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 router.get('/', async (req: Request, res: Response) => {
-  const reminders = await reminderDao.getCollection();
+  const query = req.query || {};
+  const reminders = await reminderDao.getCollection(query);
   return res.status(OK).json({ reminders });
 });
 
