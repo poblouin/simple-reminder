@@ -6,30 +6,39 @@ import Reminder from '@entities/reminder';
 import ReminderCategory from '@entities/reminder-category';
 import Dao from '@daos/dao';
 import ReminderCategoryDao from '@daos/reminder-category-dao';
+import UserDao from '@daos/user-dao';
 
 class ReminderDao extends Dao<Reminder> {
   private reminderCategoryDao = new ReminderCategoryDao();
+  private userDao = new UserDao();
 
   constructor() {
     super('reminder');
   }
 
+  // TODO: Single DB call for performance
   private async augmentReminderCollection(reminders: Array<Reminder>): Promise<Array<Reminder>> {
     const returnReminders = Array<Reminder>();
 
     await reminders.reduce(async (promise, reminder) => {
       await promise;
 
-      let reminderCategory = {};
+      let reminderCategory = null;
+      let reminderUser = null;
 
       if (reminder.category) {
         reminderCategory = await this.reminderCategoryDao.get(reminder.category);
+      }
+
+      if (reminder.reminderUser) {
+        reminderUser = await this.userDao.get(reminder.reminderUser);
       }
 
       returnReminders.push(
         new Reminder({
           ...reminder,
           ...{ category: reminderCategory },
+          ...{ reminderUser: reminderUser },
         })
       );
     }, Promise.resolve());
@@ -132,10 +141,12 @@ class ReminderDao extends Dao<Reminder> {
       }
 
       if (!category || category.categoryName !== reminder.category.categoryName) {
-        await this.reminderCategoryDao.create(new ReminderCategory(reminder.category));
+        const newCategory = await this.reminderCategoryDao.create(new ReminderCategory(reminder.category));
+        reminder = new Reminder({...reminder, ...{category: newCategory.id} });
       }
     }
 
+    console.log(reminder)
     return super.create(reminder);
   }
 

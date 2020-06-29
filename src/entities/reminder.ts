@@ -10,7 +10,7 @@ interface Reminder {
   isDone: boolean;
   dueTimestampUtc: Date;
   category: ReminderCategory;
-  user: User;
+  reminderUser: User;
   [key: string]: Reminder[keyof Reminder];
 }
 
@@ -31,7 +31,7 @@ class Reminder implements Reminder, Entity {
 
   public category: ReminderCategory;
 
-  public user: User;
+  public reminderUser: User;
 
   constructor(reminder: any) {
     this.reminderName = reminder.reminderName;
@@ -39,7 +39,7 @@ class Reminder implements Reminder, Entity {
     this.isDone = reminder.isDone || false;
     this.dueTimestampUtc = new Date(reminder.dueTimestampUtc);
     this.category = reminder.category || null;
-    this.user = reminder.user || null;
+    this.reminderUser = reminder.reminderUser || null;
     this.id = reminder.id || -1;
   }
 
@@ -49,8 +49,8 @@ class Reminder implements Reminder, Entity {
       this.description,
       this.isDone,
       this.dueTimestampUtc,
-      ...(this.user !== null ? [this.user.id] : []),
-      ...(this.category !== null ? [this.category.id] : []),
+      ...(this.category !== null ? [this.category.id || this.category] : []),
+      ...(this.reminderUser !== null ? [this.reminderUser.id || this.reminderUser] : []),
     ];
   }
 
