@@ -3,6 +3,7 @@ import snakeCase from 'lodash.snakecase';
 import { Entity } from '@entities/entity';
 import ReminderCategory from './reminder-category';
 import User from './user';
+import ReminderRecurrence from './reminder-recurrence';
 
 interface Reminder {
   reminderName: string;
@@ -11,6 +12,7 @@ interface Reminder {
   dueTimestampUtc: Date;
   category: ReminderCategory;
   reminderUser: User;
+  recurrence: ReminderRecurrence
   [key: string]: Reminder[keyof Reminder];
 }
 
@@ -33,6 +35,8 @@ class Reminder implements Reminder, Entity {
 
   public reminderUser: User;
 
+  public recurrence: ReminderRecurrence;
+
   constructor(reminder: any) {
     this.reminderName = reminder.reminderName;
     this.description = reminder.description;
@@ -40,6 +44,7 @@ class Reminder implements Reminder, Entity {
     this.dueTimestampUtc = new Date(reminder.dueTimestampUtc);
     this.category = reminder.category || null;
     this.reminderUser = reminder.reminderUser || null;
+    this.recurrence = reminder.recurrence || null;
     this.id = reminder.id || -1;
   }
 
@@ -51,12 +56,13 @@ class Reminder implements Reminder, Entity {
       this.dueTimestampUtc,
       ...(this.category !== null ? [this.category.id || this.category] : []),
       ...(this.reminderUser !== null ? [this.reminderUser.id || this.reminderUser] : []),
+      // ...(this.recurrence !== null ? [this.recurrence.id || this.recurrence] : []),
     ];
   }
 
   public toPostgresColumns(): Array<string> {
     return Object.keys(this)
-      .filter((k) => k !== 'id' && this[k] !== null)
+      .filter((k) => k !== 'id' && k !== 'recurrence' && this[k] !== null)
       .map((k) => snakeCase(k));
   }
 }

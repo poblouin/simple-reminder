@@ -4,12 +4,15 @@ import moment from 'moment';
 
 import Reminder from '@entities/reminder';
 import ReminderCategory from '@entities/reminder-category';
+import ReminderRecurrence from '@entities/reminder-recurrence';
 import Dao from '@daos/dao';
 import ReminderCategoryDao from '@daos/reminder-category-dao';
+import ReminderRecurrenceDao from '@daos/reminder-recurrence-dao';
 import UserDao from '@daos/user-dao';
 
 class ReminderDao extends Dao<Reminder> {
   private reminderCategoryDao = new ReminderCategoryDao();
+  private reminderRecurrenceDao = new ReminderRecurrenceDao();
   private userDao = new UserDao();
 
   constructor() {
@@ -146,8 +149,17 @@ class ReminderDao extends Dao<Reminder> {
       }
     }
 
-    console.log(reminder)
-    return super.create(reminder);
+    const newReminder = await super.create(reminder);
+
+    if (reminder.recurrence) {
+      const recurrence = await this.reminderRecurrenceDao.create(new ReminderRecurrence({
+        ...reminder.recurrence,
+        reminder: newReminder
+      }));
+      newReminder.recurrence = recurrence;
+    }
+
+    return newReminder;
   }
 
   async markDone(id: number): Promise<Reminder> {

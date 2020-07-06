@@ -22,8 +22,15 @@ exports.up = pgm => {
     description: 'varchar(1024)',
     is_done: { type: 'boolean', default: 'FALSE' },
     due_timestamp_utc: { type: 'timestamp', notNull: true },
-    category: { type: 'integer', references: { schema: 'public', name: 'reminder_category' } },
-    reminder_user: { type: 'integer', references: { schema: 'public', name: 'reminder_user' } },
+    category: { type: 'integer', references: { schema: 'public', name: 'reminder_category' }, onDelete: 'set null' },
+    reminder_user: { type: 'integer', references: { schema: 'public', name: 'reminder_user' }, onDelete: 'set null' }
+  });
+
+  pgm.createTable('reminder_recurrence', {
+    id: 'id',
+    frequency: { type: 'varchar(10)', notNull: true },
+    until_utc: { type: 'timestamp' },
+    reminder: { type: 'integer', references: { schema: 'public', name: 'reminder' }, onDelete: 'cascade', unique: true }
   });
 };
 

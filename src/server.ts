@@ -1,4 +1,5 @@
 import cors from 'cors';
+import cron from 'node-cron';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import express, { Request, Response, NextFunction } from 'express';
@@ -7,6 +8,7 @@ import 'express-async-errors';
 
 import logger from '@shared/logger';
 import BaseRouter from './routes';
+import { processRecurrences } from './cron-jobs';
 
 // Init express
 const app = express();
@@ -39,6 +41,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     error: err.message,
   });
 });
+
+// Cron
+// Process recurrences each day at midnight
+cron.schedule('* 0 * * *', processRecurrences);
 
 // Export express instance
 export default app;

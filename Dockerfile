@@ -7,7 +7,7 @@ RUN npm ci --silent
 COPY --chown=node:node . .
 
 # build stage
-FROM arm32v7/node:lts-slim as production-stage
+FROM arm64v8/node:lts-slim as production-stage
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY package*.json ./
