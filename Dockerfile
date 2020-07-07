@@ -17,4 +17,4 @@ COPY --chown=node:node . .
 RUN npm run build
 COPY --chown=node:node ./dist .
 CMD ["npm", "run", "start"]
-
+EXPOSE 8081
